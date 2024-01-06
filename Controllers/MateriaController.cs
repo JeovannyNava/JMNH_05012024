@@ -18,13 +18,13 @@ namespace JMNH_05012024.Controllers
         private readonly ApplicationDbContext db;
         private UserManager<IdentityUser> _userManager;
         private readonly IWebHostEnvironment _env;
-        public IConfiguration Configuration { get; set; }
+        public IConfiguration _configuration { get; set; }
         public MateriaController(ApplicationDbContext context, IWebHostEnvironment env, UserManager<IdentityUser> userManager, IConfiguration configuration)
         {
             db = context;
             _env = env;
             _userManager = userManager;
-            Configuration = configuration;
+            _configuration = configuration;
         }
 
         [Route("Materia/{IdMateria?}")]
@@ -96,8 +96,22 @@ namespace JMNH_05012024.Controllers
         public JsonResult SaveOrUpdateMateria(Materia materia)
         {
             using var dbContextTransaction = db.Database.BeginTransaction();
+            var listRemovidos = new List<string>();
+            string nuevoNombre = materia.Nombre;
             try
             {
+                var cadenaCaracteres = _configuration.GetValue <string>("CaracteresInvalidos:caracteres");
+                
+                foreach (char c in cadenaCaracteres)
+                {
+                    if (materia.Nombre.Contains(c))
+                    {
+                        nuevoNombre = nuevoNombre.Replace(c.ToString(), string.Empty);
+                        listRemovidos.Add(c.ToString());
+                    }
+                    
+                }
+                materia.Nombre = nuevoNombre;
                 var aux = materia.IdMateria == 0 ? db.Materias.Add(materia) : db.Update(materia);
                 db.SaveChanges();
             }
@@ -107,7 +121,7 @@ namespace JMNH_05012024.Controllers
                 return Json(new { status = 500, message = "Error", error = ex.ToString() });
             }
             dbContextTransaction.Commit();
-            return Json(new { status = 200, message = "Ok" });
+            return Json(new { status = 200, message = "Ok", removidos = listRemovidos });
         }
         public async Task<PartialViewResult> _AgregarMateriaAsync()
         {
