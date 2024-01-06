@@ -1,0 +1,244 @@
+﻿@model JMNH_05012024.ViewModels.RegisterViewModel
+<div>
+    <form id="form-usuario" class="mt-4">
+        <div class="row">
+            @*<div class="col-md-6">
+                    <label class="btn btn-secondary mt-3 ml-3" for="fileFoto">Subir imagen</label>
+                    <input lang="es" name="fileFoto" id="fileFoto" style="visibility: hidden;" type="file" accept=".jpg,.png,.jpeg">
+                </div>*@
+
+            @*<div class="col-md-6">
+                    <img id="imagenPrevisualizacion" style="cursor: pointer;float: right; max-width:500px; max-height:200px" class="mt-4 mr-3 btnPreview" src="" />
+                </div>*@
+            <input type="hidden" value="@Model.IdUser" id="IdUser" name="IdUser" />
+            <div class="col-4">
+                <label for="nombre">Nombre</label>
+                <input id="nombre" name="nombre" type="text" class="form-control" value="@Model.Nombre" />
+            </div>
+            <div class="col-4">
+                <label for="apellidoPaterno">Apellido Paterno</label>
+                <input id="apellidoPaterno" name="apellidoPaterno" type="text" class="form-control" value="@Model.ApellidoPaterno" />
+            </div>
+            <div class="col-4">
+                <label for="apellidoMaterno">Apellido Materno</label>
+                <input id="apellidoMaterno" name="apellidoMaterno" type="text" class="form-control" value="@Model.ApellidoMaterno" />
+            </div>
+            <div class="col-12">
+                <label for="correo">Correo</label>
+                <input id="correo" name="email" type="email" class="form-control" value="@Model.Email" @(string.IsNullOrEmpty(Model.IdUser) ? "" : "disabled") />
+            </div>
+            <div class="col-12">
+                <label for="password">Contraseña</label>
+                <input id="password" name="password" type="password" class="form-control" />
+            </div>
+            <div class="col-12">
+                <label for="confirmPassword">Repetir Contraseña</label>
+                <input id="confirmPassword" name="confirmPassword" type="password" class="form-control" />
+
+            </div>
+
+
+
+        </div>
+    </form>
+    <div class="col-12 mt-4">
+        <button class="btn btn-success fl-r" style="float:right;" onclick="guardarUsuario()">Guardar</button>
+        @if (!string.IsNullOrEmpty(Model.IdUser) && Model.IdUser != ViewBag.IdUser)
+        {
+            <button class="btn btn-danger fl-l" style="float:left;" onclick="eliminarUsuario()">Eliminar</button>
+        }
+    </div>
+
+    @section Scripts{
+        <script>
+
+    $(() => {
+        ValidacionForm();
+    });
+    var ValidacionForm = () => {
+        jQuery.validator.setDefaults({
+            //ignore: [],
+            debug: true,
+            success: "valid",
+            highlight: function (element) {
+                $(element).css('border-color', 'red');
+            },
+
+            // Called when the element is valid:
+            unhighlight: function (element) {
+
+                $(element).css('background', '#ffffff');
+                $(element).css('border-color', '#256d18');
+            }
+        });
+
+        $.validator.addMethod("valueNotEquals", function (value, element, arg) {
+            return arg !== value;
+        }, "Seleccione una opción.");
+
+        $.validator.addMethod('passVal', function (value, element) {
+            return this.optional(element) || (value.match(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^\w\s]).{8,}$/));
+        },
+            'La contraseña debe contener al menos una mayuscula, un número, un caracter especial y 8 digitos.');
+
+
+        $("#form-usuario").validate({
+            rules: {
+                nombre: {
+                    required: true
+                },
+                apellidoPaterno: {
+                    required: true
+                },
+                correo: {
+                    required: true,
+
+                },
+                password: {
+                    required: @(Model.IdUser==null?"true":"false"),
+                    passVal: true
+                },
+
+                rPassword: {
+                    required: @(Model.IdUser==null?"true":"false"),
+                    equalTo: "#password"
+                },
+
+                IdTipoUsuario: {
+                    valueNotEquals: "0"
+                },
+                IdEmpresa: {
+                    valueNotEquals: "0"
+                }
+
+            },
+            messages: {
+                nombre: {
+                    required: "El campo es requerido"
+                },
+                apellidoPaterno: {
+                    required: "El campo es requerido"
+
+                },
+                correo: {
+                    required: "El campo es requerido",
+                    regex: "Correo invalido"
+                },
+                password: {
+                    required: "El campo es requerido"
+
+                },
+
+                rPassword: {
+                    required: "El campo es requerido",
+                    equalTo: "Las contraseñas no coinciden"
+                },
+
+                IdTipoUsuario: {
+                    valueNotEquals: "Campo requerido"
+                },
+                IdEmpresa: {
+                    valueNotEquals: "Campo requerido"
+                }
+            }
+        });
+    }
+
+
+    function guardarUsuario ()
+    {
+
+        if (!$("#form-usuario").valid()) {
+
+            return false;
+        }
+
+       // let seleccionarImagenes = document.querySelector("#fileFoto");
+        //let imagenes = seleccionarImagenes.files;
+        //let imagen = imagenes[0];
+        let form = $("#form-usuario")[0];
+        let formData = new FormData(form);
+        //formData.append("Imagen", imagenes[0])
+        $.ajax({
+            type: "POST",
+            url: "/Account/RegistrarUsuario",
+            contentType: 'multipart/form-data;',
+            data: formData,
+            processData: false,  // tell jQuery not to process the data
+            contentType: false,   // tell jQuery not to set contentType
+            success: function (data) {
+                debugger
+                if (data.status == 200) {
+                    swal({
+                        title: "Éxito",
+                        text: "El usuario fue dado de alta con exito",
+                        icon: "success",
+                        button: "Aceptar",
+                    }).then(value => {
+                        $("#modalUsuario").modal("hide");
+                        location.reload()
+
+                    });
+                } else if (data.status == 300) {
+                    swal("Atención", data.message, "info");
+                } else {
+                    swal("Error", data.message, "error");
+                }
+            },
+            error: function (jqXhr, textStatus, errorThrown) {
+                swal("Error", "Error de comunicación con el servidor", "error");
+            }
+        });
+    }
+
+    /*$seleccionArchivos = document.querySelector("#fileFoto");
+    $imagenPrevisualizacion = document.querySelector("#imagenPrevisualizacion");
+
+    $seleccionArchivos.addEventListener("change", () => {
+        const archivos = $seleccionArchivos.files;
+
+        if (!archivos || !archivos.length) {
+            $imagenPrevisualizacion.src = "";
+            return;
+        }
+        const primerArchivo = archivos[0];
+        getBase64(primerArchivo).then(function (data) {
+            document.getElementById("imagenPrevisualizacion").src = data;
+            imagen = data;
+        })
+    });*/
+
+           var eliminarUsuario = () => {
+
+                swal({
+
+                    title: "¿Estás seguro de eliminar este usuario?",
+                    text: "",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((confirmar) => {
+                    if (confirmar) {
+                        $.post("/Account/EliminarUsuario", { IdUser:"@Model.IdUser"}).done((resp) => {
+                            if (resp.status == 200) {
+                                swal({
+                                    title: "Éxito",
+                                    text: "El usuario fue eliminado con exito",
+                                    icon: "success",
+                                    button: "Aceptar",
+                                }).then(value => {
+                                    $("#modalUsuario").modal("hide");
+                                    location.href = "/Account/Usuarios"
+                                });
+                            } else {
+                                swal("Error", "Error de comunicación con el servidor " + resp.message, "error");
+                            }
+                        }).fail(err => {
+                            swal("Error", "Error de comunicación con el servidor " + JSON.stringify(err), "error");
+                        })
+                    }
+                });
+            }
+
+        </script>
+    }

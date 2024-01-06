@@ -1,0 +1,127 @@
+﻿@model JMNH_05012024.Models.Alumno
+@{
+
+
+}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="text-center mb-5">@(Model.IdAlumno==0 ?"Alta de" : "Editar Datos de") Alumno</h1>
+                <form id="form-alumno">
+                    <div class="row">
+                        <input type="hidden" class="form-control" name="IdPaciente" id="IdPaciente" value="@Model.IdAlumno">
+                        <div class="col-md-4 col-lg-4 col-sm-6">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" class="form-control" name="nombre" id="nombre" value="@Model.Nombre">
+                        </div>
+                        <div class="col-md-4 col-lg-4 col-sm-6">
+                            <label class="form-label">Apellido Paterno</label>
+                            <input type="text" class="form-control" name="apellidoPaterno" id="apellidoPaterno" value="@Model.ApellidoPaterno">
+                        </div>
+                        <div class="col-md-4 col-lg-4 col-sm-6">
+                            <label class="form-label">Apellido Materno</label>
+                            <input type="text" class="form-control" name="apellidoMaterno" id="apellidoMaterno" value="@Model.ApellidoPaterno">
+                        </div>
+                    </div> 
+                </form>
+            </div> 
+        </div> 
+    </div>
+</div>
+<div>
+    <button style="float:right;margin-left:3%" class="btn btn-success" onclick="saveOrUpdateAlumno()">Guardar</button>
+</div>
+
+@section Scripts{
+    <script>
+        $(() => {
+  
+            validarFormAlumno();
+        });
+        let saveOrUpdateAlumno = () => {
+
+            if (!$("#form-alumno").valid()) {
+                return false;
+            }
+            var form = $("#form-alumno")[0];
+            var formData = new FormData(form);
+            $.ajax({
+                type: "POST",
+                url: "/Alumno/SaveOrUpdateAlumno",
+                data: formData,
+                processData: false,  // tell jQuery not to process the data
+                contentType: false,   // tell jQuery not to set contentType
+                success: function (msg) {
+                    if (msg.status == 200) {
+                        if (msg.status == 200) {
+                            swal({
+                                title: "ÉXITO",
+                                text: "Proceso terminado con éxito",
+                                icon: "success",
+                                button: "Aceptar",
+                            }).then((value) => {
+                                window.location.href = '/Alumnos'
+                            });
+                        } else {
+                            swal({
+                                title: "Error",
+                                text: "Ocurrio un error, intentelo nuevamente",
+                                icon: "warning",
+                                button: "Aceptar",
+                            });
+                        }
+                    } else {
+                        swal({
+                            title: "Error",
+                            text: "Ocurrio un error, intentelo nuevamente",
+                            icon: "warning",
+                            button: "Aceptar",
+                        });
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+        let validarFormAlumno = () => {
+            jQuery.validator.setDefaults({
+                debug: true,
+                success: "valid",
+                highlight: function (element) {
+                    $(element).css('border-color', 'red');
+                },
+
+                // Called when the element is valid:
+                unhighlight: function (element) {
+
+                    $(element).css('background', '#ffffff');
+                    $(element).css('border-color', '#256d18');
+
+                }
+            });
+            $.validator.addMethod("valueNotEquals", function (value, element, arg) {
+                return arg !== value;
+            }, "Seleccione una opción.");
+            $("#form-alumno").validate({
+
+                rules: {
+                    nombre: { required: true },
+                    apellidoPaterno: { required: true },
+                    apellidoMaterno: { required: true },
+
+
+                },
+                messages: {
+                    nombre: { required: 'Campo requerido' },
+                    apellidoPaterno: { required: "Este campo es requerido" },
+                    apellidoMaterno: { required: "Este campo es requerido" },
+
+
+                }
+            });
+        }
+      
+    </script>
+}

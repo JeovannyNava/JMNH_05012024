@@ -1,0 +1,69 @@
+﻿<div class="row mt-5">
+
+    <div class="col-md-6 col-lg-6 col-sm-6">
+        <input type="text" id="busqueda" class="form-control" />
+    </div>
+    <div class="col-md-6 col-lg-6 col-sm-6">
+        <a class="btn btn-success float-right" href="/alumno">
+            <i class="fa fa-plus"></i> Añadir Alumno
+        </a>
+    </div>
+
+    <div class="col-md-12 col-lg-12 col-sm-12 mt-4">
+        <table id="tabla-alumnos" class="table table-bordered table-striped table-hover"></table>
+    </div>
+</div>
+@section Scripts{
+    <script>
+    $(()=> {
+        loadTablaAlumnos();
+    });
+    $('#busqueda').keyup(function () {
+        tablaAlumnos.search($(this).val()).draw();
+    });
+        var tablaAlumnos = null;
+    ColumnasAlumnos = [
+        { title: "NOMBRE", "data": "Nombre" },
+        { title: "APELLIDO PATERNO", "data": "ApellidoPaterno" },
+        { title: "APELLIDO MATERNO", "data": "ApellidoMaterno" },
+        { title: "",
+            "data": (data, type, row) => {
+                return `<a data-toggle='tooltip' data-placement='top' title='Editar' class='btn btn-outline-info btn-fw' type='button' href='Alumno/${data.IdAlumno}'><i class='fa fa-edit'></i></a>`;
+            }
+        }
+    ];
+    let loadTablaAlumnos = ()=> {
+        if (tablaAlumnos == null) {
+            tablaAlumnos = $('#tabla-alumnos').DataTable({
+                responsive: false,
+                lengthChange: false,
+                searching: false,
+                ordering: false,
+                language: {
+                    "paginate": {
+                        "previous": "Anterior",
+                        "next": "Siguiente"
+                    },
+                    "info": "",
+                    "zeroRecords": "No hay registros que mostrar",
+                },
+                serverSide: true,
+                ajax: {
+                    "url": '/Alumno/Alumnos',
+                    "type": "POST",
+                    "data": function (d) {
+                        d.Buscador = $("#busqueda").val();
+                    }
+                },
+                initComplete: function (settings, json) {
+                    $(".btnTooltip").attr("data-toggle", "tooltip");
+                    $(".btnTooltip").attr("data-placement", "top");
+                    $('[data-toggle="tooltip"]').tooltip();
+                },
+                columns: ColumnasAlumnos,
+                "info": false
+            });
+        }
+    }
+    </script>
+}

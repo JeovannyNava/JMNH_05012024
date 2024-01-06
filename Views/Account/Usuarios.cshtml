@@ -1,0 +1,74 @@
+﻿@model List<JMNH_05012024.ViewModels.Usuario>
+@{
+    ViewData["Title"] = "Usuarios";
+}
+
+<h1 class="text-center">Registro de Usuarios</h1>
+
+<div class="dropzone-previews mt-3" id="file-previews"></div>
+<div class="w-100 mb-3" style="display:inline-block">
+    <a id="agregarUsuario" class="btn btn-success float-right" href="/Usuario/"><i class="fa fa-plus"></i>Agregar Usuario</a>
+</div>
+<!-- file preview template -->
+<div class="d-none" id="uploadPreviewTemplate">
+
+
+    <div class="card mt-1 mb-0 shadow-none border">
+        <div class="p-2">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <img data-dz-thumbnail src="#" class="avatar-sm rounded bg-light" alt="">
+                </div>
+                <div class="col ps-0">
+                    <a href="javascript:void(0);" class="text-muted fw-bold" data-dz-name></a>
+                    <p class="mb-0" data-dz-size></p>
+                </div>
+                <div class="col-auto">
+                    <!-- Button -->
+                    <a href="" class="btn btn-link btn-lg text-muted" data-dz-remove>
+                        <i class="dripicons-cross"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-12">
+    <div class="row">
+        <div class="col-12">
+            <table id="tabla-equipos" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>NOMBRE</th>
+                        <th>CORREO</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>@user.Nombre @user.ApellidoPaterno @user.ApellidoMaterno</td>
+                            @*<td>@user.Email</td>*@
+                            <td><a class="btn btn-outline-info float-right" href="/Usuario/@user.IdUser"><i class="fa fa-edit"></i></a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<div id="divModalUsuarios"></div>
+@section Scripts{
+    <script>
+        document.getElementById("agregarUsuario").onclick = function () { AgregarUsuario('') };
+        var AgregarUsuario = (IdUsuario) => {
+            $('#divModalUsuarios').load("/Account/_Usuario?IdUsuario=" + IdUsuario, function () {
+                $("#modalUsuario").modal('show')
+            });
+        }
+
+    </script>
+}
