@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static JMNH_05012024.Models.IdentityModels;
 
 namespace JMNH_05012024.Controllers
 {
@@ -34,13 +35,14 @@ namespace JMNH_05012024.Controllers
             return View(model);
         }
         [Route("Alumnos")]
+   
         public IActionResult Alumnos()
         {
 
             return View();
         }
         [HttpPost]
-        public JsonResult Alumnos(int draw, int start, int length, Dictionary<string, string>[] order, int IdCliente, string buscador)
+        public JsonResult Alumnos(int draw, int start, int length, Dictionary<string, string>[] order, string buscador)
         {
             DataTableVM response = new DataTableVM()
             {
@@ -82,12 +84,43 @@ namespace JMNH_05012024.Controllers
             }
         }
         [HttpPost]
-        public JsonResult SaveOrUpdateAlumno(Alumno alumno)
+        public async Task<JsonResult> SaveOrUpdateAlumnoAsync(Alumno alumno)
         {
             using var dbContextTransaction = db.Database.BeginTransaction();
             try
             {
                 var aux = alumno.IdAlumno == 0 ? db.Alumnos.Add(alumno) : db.Update(alumno);
+
+                var user = alumno.IdAlumno == 0 ? new ApplicationUser
+                {
+                    UserName = alumno.Nombre + alumno.ApellidoPaterno,
+                    Nombre = alumno.Nombre,
+                    ApellidoPaterno = alumno.ApellidoPaterno,
+                    ApellidoMaterno = alumno.ApellidoMaterno,
+                    Email = "generico@gmail.com",
+                    FechaAlta = DateTime.Now
+                } : db.Users.FirstOrDefault(x => x.UserName == alumno.Nombre + alumno.ApellidoPaterno);
+
+                if (alumno.IdAlumno == 0)
+                {
+                    var result = await _userManager.CreateAsync(user, "Abcd-1234");
+                    if (!result.Succeeded)
+                    {
+                        dbContextTransaction.Rollback();
+                        return Json(new { status = 500, message = "Error", error = "Error al crear el usuario" });
+                    }
+     
+                }
+                else
+                {
+                    
+                    user.Nombre = alumno.Nombre;
+                    user.ApellidoPaterno = alumno.ApellidoPaterno;
+                    user.ApellidoMaterno = alumno.ApellidoMaterno;
+                    user.UserName = alumno.Nombre + alumno.ApellidoPaterno;
+                    db.Update(user);
+                   
+                }
                 db.SaveChanges();
             }
             catch (Exception ex)

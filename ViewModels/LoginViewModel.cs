@@ -17,5 +17,7 @@ namespace JMNH_05012024.ViewModels
 
         [Display(Name = "Remember Me")]
         public bool RememberMe { get; set; }
+
+
     }
 }

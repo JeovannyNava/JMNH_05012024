@@ -1,7 +1,7 @@
 ﻿<div class="row mt-5">
 
     <div class="col-md-6 col-lg-6 col-sm-6">
-        <input type="text" id="busqueda" class="form-control" />
+        <input type="text" id="busqueda" class="form-control" placeholder="Alumno..."/>
     </div>
     <div class="col-md-6 col-lg-6 col-sm-6">
         <a class="btn btn-success float-right" href="/alumno">
@@ -28,7 +28,10 @@
         { title: "APELLIDO MATERNO", "data": "ApellidoMaterno" },
         { title: "",
             "data": (data, type, row) => {
-                return `<a data-toggle='tooltip' data-placement='top' title='Editar' class='btn btn-outline-info btn-fw' type='button' href='Alumno/${data.IdAlumno}'><i class='fa fa-edit'></i></a>`;
+                return `
+                    <a data-toggle='tooltip' data-placement='top' title='Editar' class='btn btn-outline-info btn-fw' type='button' href='Alumno/${data.IdAlumno}'><i class='fa fa-edit'></i></a>
+                    <a data-toggle='tooltip' data-placement='top' title='Ver Materias' class='btn btn-outline-info btn-fw' type='button' href='materias-alumno/${data.IdAlumno}'><i class='fa fa-book'></i></a>
+                    `;
             }
         }
     ];

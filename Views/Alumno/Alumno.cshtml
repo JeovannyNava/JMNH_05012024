@@ -10,7 +10,7 @@
                 <h1 class="text-center mb-5">@(Model.IdAlumno==0 ?"Alta de" : "Editar Datos de") Alumno</h1>
                 <form id="form-alumno">
                     <div class="row">
-                        <input type="hidden" class="form-control" name="IdPaciente" id="IdPaciente" value="@Model.IdAlumno">
+                        <input type="hidden" class="form-control" name="IdAlumno" id="IdAlumno" value="@Model.IdAlumno">
                         <div class="col-md-4 col-lg-4 col-sm-6">
                             <label class="form-label">Nombre</label>
                             <input type="text" class="form-control" name="nombre" id="nombre" value="@Model.Nombre">
@@ -21,7 +21,7 @@
                         </div>
                         <div class="col-md-4 col-lg-4 col-sm-6">
                             <label class="form-label">Apellido Materno</label>
-                            <input type="text" class="form-control" name="apellidoMaterno" id="apellidoMaterno" value="@Model.ApellidoPaterno">
+                            <input type="text" class="form-control" name="apellidoMaterno" id="apellidoMaterno" value="@Model.ApellidoMaterno">
                         </div>
                     </div> 
                 </form>
@@ -36,8 +36,11 @@
 @section Scripts{
     <script>
         $(() => {
-  
             validarFormAlumno();
+            $("#nombre").rules("add", { regex: "^[a-zA-záéíóúÁÉÍÓÚ'.\\s]{1,40}$" })
+            $("#apellidoPaterno").rules("add", { regex: "^[a-zA-záéíóúÁÉÍÓÚ'.\\s]{1,40}$" })
+            $("#apellidoMaterno").rules("add", { regex: "^[a-zA-záéíóúÁÉÍÓÚ'.\\s]{1,40}$" })
+            
         });
         let saveOrUpdateAlumno = () => {
 
@@ -104,6 +107,15 @@
             $.validator.addMethod("valueNotEquals", function (value, element, arg) {
                 return arg !== value;
             }, "Seleccione una opción.");
+            $.validator.addMethod(
+                "regex",
+                function (value, element, regexp) {
+                    var re = new RegExp(regexp);
+                    return this.optional(element) || re.test(value);
+                },
+                "Solo acepta caracteres alfabeticos."
+            );
+    
             $("#form-alumno").validate({
 
                 rules: {

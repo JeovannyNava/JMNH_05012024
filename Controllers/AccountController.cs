@@ -28,9 +28,17 @@ namespace JMNH_05012024.Controllers
         public IActionResult Login()
         {
             return View();
+        }    
+        public IActionResult LoginAdmin()
+        {
+            return View();
+        }    
+        public IActionResult LoginAlumno()
+        {
+            return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel user)
+        public async Task<IActionResult> LoginAdmin(LoginViewModel user)
         {
             if (ModelState.IsValid)
             {
@@ -47,88 +55,35 @@ namespace JMNH_05012024.Controllers
             }
             return View(user);
         }
+        [HttpPost]
+        
+        public async Task<ActionResult> LoginAlumno(LoginViewModelAlumno model)
+        {
+
+           
+            var user = _userManager.Users.Where(x => x.UserName == model.Nombre + model.Apellido).FirstOrDefault();
+
+            if (user != null)
+            {
+                await _signInManager.SignInAsync(user, true);
+                if (User.Identity.IsAuthenticated)
+                {
+               
+                    return RedirectToAction("Index", "Home");
+                }
+
+            }
+
+            return View();
+        }
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
 
             return RedirectToAction("Login");
         }
-        public IActionResult Usuarios()
-        {
-            var users = db.Users.Where(x => !x.LockoutEnabled).ToList().Select(x => new Usuario()
-            {
-                Nombre = x.Nombre,
-                ApellidoPaterno = x.ApellidoPaterno,
-                ApellidoMaterno = x.ApellidoMaterno,
-                IdUser = x.Id
-            }).ToList();
 
-            return View(users);
-        }
-
-        public async Task<JsonResult> RegistrarUsuario(RegisterViewModel model)
-        {
-
-           
-            var user = string.IsNullOrEmpty(model.IdUser) ? new ApplicationUser
-            {
-                UserName = model.Email,
-                Nombre = model.Nombre,
-                ApellidoPaterno = model.ApellidoPaterno,
-                ApellidoMaterno = model.ApellidoMaterno,
-                Email = model.Email,
-                FechaAlta = DateTime.Now
-            } : db.Users.FirstOrDefault(x => x.Id == model.IdUser);
-
-            if (string.IsNullOrEmpty(model.IdUser))
-            {
-                var result = await _userManager.CreateAsync(user, model.Password);
-
-                if (result.Succeeded)
-                {
-                    return Json(new { Status = 200, Message = "Ok" });
-                }
-            }
-            else
-            {
-                user.Nombre = model.Nombre;
-                user.ApellidoPaterno = model.ApellidoPaterno;
-                user.ApellidoMaterno = model.ApellidoMaterno;
-                db.SaveChanges();
-                if (!string.IsNullOrEmpty(model.Password) && !string.IsNullOrEmpty(model.ConfirmPassword))
-                {
-                    if (model.Password == model.ConfirmPassword)
-                    {
-                        await _userManager.RemovePasswordAsync(user);
-                        await _userManager.AddPasswordAsync(user, model.Password);
-                    }
-                }
-                return Json(new { Status = 200, Message = "Ok" });
-            }
-            return Json(new { Status = 500, Message = "Failed" });
-        }
-
-        [Route("/Usuario/{IdUsuario?}")]
-        public IActionResult Usuario(string IdUsuario)
-        {
-
-            var user = new ApplicationUser();
-            user = (ApplicationUser)db.Users.Find(IdUsuario);
-            var model = new RegisterViewModel();
-            if (user != null)
-            {
-                model.Email = user.Email;
-                model.Nombre = user.Nombre;
-                model.Imagen = user.UrlImagen;
-                model.ApellidoPaterno = user.ApellidoPaterno;
-                model.ApellidoMaterno = user.ApellidoMaterno;
-                model.IdUser = user.Id;
-            }
-            ViewBag.IdUser = _userManager.GetUserId(User);
-            return View(model);
-        }
-
-        public ActionResult EliminarUsuario(string IdUser)
+       public ActionResult EliminarUsuario(string IdUser)
         {
             var user = db.Users.FirstOrDefault(x => x.Id == IdUser);
             user.LockoutEnabled = true;

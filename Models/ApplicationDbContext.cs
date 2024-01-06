@@ -14,6 +14,7 @@ namespace JMNH_05012024.Models
         public DbSet<ApplicationUser> Users { get; set; }
         public DbSet<Alumno> Alumnos{ get; set; }
         public DbSet<Materia> Materias { get; set; }
+        public DbSet<MateriasAlumno> MateriasAlumnos{ get; set; }
 
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {

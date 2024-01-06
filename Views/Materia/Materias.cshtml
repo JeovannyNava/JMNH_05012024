@@ -1,7 +1,7 @@
 ﻿<div class="row mt-5">
 
     <div class="col-md-6 col-lg-6 col-sm-6">
-        <input type="text" id="busqueda" class="form-control" />
+        <input type="text" id="busqueda" class="form-control" placeholder="Nombre de la materia"/>
     </div>
     <div class="col-md-6 col-lg-6 col-sm-6">
         <a class="btn btn-success float-right" href="/materia">
@@ -10,7 +10,7 @@
     </div>
 
     <div class="col-md-12 col-lg-12 col-sm-12 mt-4">
-        <table id="tabla-materias>" class="table table-bordered table-striped table-hover"></table>
+        <table id="tabla-materias" class="table table-bordered table-striped table-hover"></table>
     </div>
 </div>
 @section Scripts{
@@ -28,7 +28,7 @@
         
         { title: "",
             "data": (data, type, row) => {
-                return `<a data-toggle='tooltip' data-placement='top' title='Editar' class='btn btn-outline-info btn-fw' type='button' href='Alumno/${data.IdMateria}'><i class='fa fa-edit'></i></a>`;
+                return `<a data-toggle='tooltip' data-placement='top' title='Editar' class='btn btn-outline-info btn-fw' type='button' href='Materia/${data.IdMateria}'><i class='fa fa-edit'></i></a>`;
             }
         }
     ];
@@ -49,7 +49,7 @@
                 },
                 serverSide: true,
                 ajax: {
-                    "url": '/materia/materias',
+                    "url": '/Materia/Materias',
                     "type": "POST",
                     "data": function (d) {
                         d.Buscador = $("#busqueda").val();
@@ -60,7 +60,7 @@
                     $(".btnTooltip").attr("data-placement", "top");
                     $('[data-toggle="tooltip"]').tooltip();
                 },
-                columns: ColumnasMaterias,
+                    columns: ColumnasMaterias,
                 "info": false
             });
         }

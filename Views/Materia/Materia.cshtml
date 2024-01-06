@@ -8,16 +8,16 @@
         <div class="card">
             <div class="card-body">
                 <h1 class="text-center mb-5">@(Model.IdMateria == 0 ?"Alta de" : "Editar Datos de") Materia</h1>
-                <form id="form-alumno">
+                <form id="form-materia">
                     <div class="row">
-                        <input type="hidden" class="form-control" name="IdPaciente" id="IdPaciente" value="@Model.IdMateria">
+                        <input type="hidden" class="form-control" name="IdMateria" id="IdMateria" value="@Model.IdMateria">
                         <div class="col-md-4 col-lg-4 col-sm-6">
                             <label class="form-label">Nombre</label>
                             <input type="text" class="form-control" name="nombre" id="nombre" value="@Model.Nombre">
                         </div>
                         <div class="col-md-4 col-lg-4 col-sm-6">
                             <label class="form-label">Apellido Paterno</label>
-                            <input type="text" class="form-control" name="apellidoPaterno" id="apellidoPaterno" value="@Model.Costo">
+                            <input type="number" class="form-control" name="costo" id="costo" value="@Model.Costo">
                         </div>
                       
                     </div>
@@ -58,7 +58,7 @@
                                 icon: "success",
                                 button: "Aceptar",
                             }).then((value) => {
-                                window.location.href = '/Alumnos'
+                                window.location.href = '/Materias'
                             });
                         } else {
                             swal({
@@ -105,14 +105,14 @@
 
                 rules: {
                     nombre: { required: true },
-                    costo: { required: true }
+                    costo: { min: 1}
                
 
 
                 },
                 messages: {
                     nombre: { required: 'Campo requerido' },
-                    costo: { required: "Este campo es requerido" }
+                    costo: { min: "El precio debe ser mayor a 0" }
                    
 
 

@@ -17,6 +17,7 @@ namespace JMNH_05012024.Models
             public DateTime FechaAlta { get; set; }
          
 
+
         }
     }
 }

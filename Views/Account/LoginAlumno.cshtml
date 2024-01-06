@@ -1,4 +1,4 @@
-﻿@model JMNH_05012024.ViewModels.LoginViewModel
+﻿@model JMNH_05012024.ViewModels.LoginViewModelAlumno
 @{ Layout = null; }
 <html lang="en" data-topbar-color="dark" data-bs-theme="light" data-layout-mode="default" data-layout-width="default" data-menu-color="light" data-menu-icon="default" data-sidenav-size="default">
 <head>
@@ -20,15 +20,28 @@
                     <div class="card bg-pattern">
                         <div class="card-body p-4">
                             <div class="text-center w-75 m-auto">
-                                
-                                <p class="text-muted mb-4 mt-3">Para acceder copmo administrador, haz click <a href="/Account/LoginAdmin">aquí</a></p>
-                                <p class="text-muted mb-4 mt-3">Para acceder copmo alumnjo, haz click <a href="/Account/LoginAlumno">aquí</a></p>
-                               
-                            </div>
 
+                                <p class="text-muted mb-4 mt-3">Escribe tu usuario y contraseña para acceder al sistema.</p>
+                                <div asp-validation-summary="All" class="text-danger"></div>
+                            </div>
+                            <form method="post">
+                                <div class="mb-3">
+                                    <label asp-for="Nombre">Nombre</label>
+                                    <input asp-for="Nombre" class="form-control" type="text" placeholder="Ingresa tu Nombre" />
+                                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="Apellido">Apellido Paterno</label>
+                                    <input asp-for="Apellido" class="form-control" placeholder="Ingresa tu Apellido Paterno" />
+                                    <span asp-validation-for="Apellido" class="text-danger"></span>
+                                </div>
+                                <div class="text-center d-grid">
+                                    <button class="btn btn-primary" type="submit"> Ingresar</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                </div> 
+                </div>
             </div>
         </div>
     </div>

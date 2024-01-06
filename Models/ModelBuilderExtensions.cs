@@ -36,8 +36,13 @@ namespace JMNH_05012024.Models
                     UserName = "Master",
                     NormalizedUserName = "JEOVANNY156@GMAIL.COM",
                     Id = ADMIN_ID
+                  
                 };
-
+                modelBuilder.Entity<IdentityUserRole<string>>().HasData(new IdentityUserRole<string>
+                {
+                    RoleId = ROLE_ID,
+                    UserId = ADMIN_ID
+                });
                 //set user password
                 PasswordHasher<ApplicationUser> ph = new PasswordHasher<ApplicationUser>();
                 appUser.PasswordHash = ph.HashPassword(appUser, "Digipro-123");
