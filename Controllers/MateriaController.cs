@@ -1,8 +1,10 @@
 ﻿using JMNH_05012024.Models;
 using JMNH_05012024.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -26,6 +28,7 @@ namespace JMNH_05012024.Controllers
         }
 
         [Route("Materia/{IdMateria?}")]
+        [Authorize(Roles = "SuperAdmin")]
         public IActionResult Materia(int? IdMateria)
         {
             var model = db.Materias.Find(IdMateria) ?? new Materia();
@@ -34,6 +37,7 @@ namespace JMNH_05012024.Controllers
             return View(model);
         }
         [Route("Materias")]
+        [Authorize(Roles = "SuperAdmin")]
         public IActionResult Materias()
         {
 
@@ -77,6 +81,17 @@ namespace JMNH_05012024.Controllers
                 return Json(response);
             }
         }
+        [Route("mis-materias")]
+        [Authorize(Roles="Alumno")]
+        public async Task<IActionResult> MisMateriasAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var userName = user.UserName;
+            var alumno = db.Alumnos.FirstOrDefault(x=> x.UserName == userName);
+            alumno.Materias = db.MateriasAlumnos.Where(x=> x.IdAlumno == alumno.IdAlumno).Select(x=> x.Materia).ToList();
+            
+            return View(alumno);
+        }
         [HttpPost]
         public JsonResult SaveOrUpdateMateria(Materia materia)
         {
@@ -84,6 +99,38 @@ namespace JMNH_05012024.Controllers
             try
             {
                 var aux = materia.IdMateria == 0 ? db.Materias.Add(materia) : db.Update(materia);
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                dbContextTransaction.Rollback();
+                return Json(new { status = 500, message = "Error", error = ex.ToString() });
+            }
+            dbContextTransaction.Commit();
+            return Json(new { status = 200, message = "Ok" });
+        }
+        public async Task<PartialViewResult> _AgregarMateriaAsync()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var userName = user.UserName;
+            var alumno = db.Alumnos.FirstOrDefault(x => x.UserName == userName);
+            var materiasAlumno =  db.MateriasAlumnos.Where(x => x.IdAlumno == alumno.IdAlumno).Select(x => x.Materia).ToList().Select(x=> x.IdMateria);
+            ViewBag.Materias = db.Materias.Where(x => !materiasAlumno.Contains(x.IdMateria)).Select(x => new SelectListItem { Value = x.IdMateria.ToString(), Text = x.Nombre + " $" + x.Costo }).ToList(); ;
+            return PartialView();
+        }
+        public async Task<JsonResult> InscribirMateria(int IdMateria)
+        {
+            using var dbContextTransaction = db.Database.BeginTransaction();
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                var userName = user.UserName;
+                var alumno = db.Alumnos.FirstOrDefault(x => x.UserName == userName);
+                var materia = db.Materias.Find(IdMateria);
+                db.MateriasAlumnos.Add(new MateriasAlumno { 
+                IdAlumno = alumno.IdAlumno,
+                IdMateria = materia.IdMateria
+                });
                 db.SaveChanges();
             }
             catch (Exception ex)

@@ -4,14 +4,16 @@ using JMNH_05012024.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace JMNH_05012024.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240106201913_roles")]
+    partial class roles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,9 +39,6 @@ namespace JMNH_05012024.Migrations
                     b.Property<string>("Nombre")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IdAlumno");
 
@@ -117,14 +116,14 @@ namespace JMNH_05012024.Migrations
                         new
                         {
                             Id = "e52c169c-cd4a-473a-becc-0dba41c78423",
-                            ConcurrencyStamp = "78f50cc4-b673-4766-9869-4f879fa4046c",
+                            ConcurrencyStamp = "65210c51-21f6-4727-9a91-3a8c9ebf20aa",
                             Name = "SuperAdmin",
                             NormalizedName = "SUPERADMIN"
                         },
                         new
                         {
                             Id = "e52c169c-cd4a-473a-becc-0dba41c78424",
-                            ConcurrencyStamp = "bbd7f7e2-37d4-4a6f-83f0-9da896c7edd4",
+                            ConcurrencyStamp = "e6c40764-cf86-4243-bc91-162e2fd70c48",
                             Name = "Alumno",
                             NormalizedName = "ALUMNO"
                         });
@@ -338,14 +337,14 @@ namespace JMNH_05012024.Migrations
                         {
                             Id = "72c7e21c-ac55-46b4-a2ee-df24af6b45e4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "8faf2981-7ae9-4681-ad55-0fe6b8917f38",
+                            ConcurrencyStamp = "e73915b8-91f3-40d1-9a98-0e45a61b2228",
                             Email = "jeovanny156@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedUserName = "JEOVANNY156@GMAIL.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEEibjK+JklrY5SFF4jWlUAXLQ5N5LWd2+sbuxlFcHR6Wv2M0OKYuse+DWwLQHkPcAQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEKA0oycsHgUwhIXMiSaVpDEA9x0sMHpfi0shtN2+Q0ls2J5noStcmf+hRhgNVvUbdw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "183455c6-9f06-4d3a-8a7e-502bb5c5261c",
+                            SecurityStamp = "acab0440-193e-4aeb-bbc9-6a2820aae80a",
                             TwoFactorEnabled = false,
                             UserName = "Master",
                             ApellidoMaterno = "Hernandez",

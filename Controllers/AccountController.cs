@@ -65,16 +65,11 @@ namespace JMNH_05012024.Controllers
 
             if (user != null)
             {
-                await _signInManager.SignInAsync(user, true);
-                if (User.Identity.IsAuthenticated)
-                {
-               
-                    return RedirectToAction("Index", "Home");
-                }
-
+                await _signInManager.SignInAsync(user, true, "");
+                return RedirectToAction("Index", "Home");
             }
-
-            return View();
+            ModelState.AddModelError(string.Empty, "Datos Invalidos");
+            return View(model);
         }
         public async Task<IActionResult> Logout()
         {

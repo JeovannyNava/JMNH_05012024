@@ -16,7 +16,9 @@ namespace JMNH_05012024.Models
         public string ApellidoPaterno { get; set; }
         [MaxLength(50)]
         public string ApellidoMaterno { get; set; }
-        ICollection<Materia> Materias { get; set; }
+       
+        public List<Materia> Materias { get; set; }
+        public string UserName { get; set; }
 
 
     }

@@ -13,6 +13,6 @@ namespace JMNH_05012024.Models
         [MaxLength(50)]
         public string Nombre { get; set; }
         public double Costo { get; set; }
-        ICollection<Alumno> Alumnos{ get; set; }
+        public List<Alumno> Alumnos{ get; set; }
     }
 }

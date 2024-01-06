@@ -19,12 +19,19 @@ namespace JMNH_05012024.Models
             void CreateUser()
             {
                 string ADMIN_ID = "72c7e21c-ac55-46b4-a2ee-df24af6b45e4";
-                string ROLE_ID = "e52c169c-cd4a-473a-becc-0dba41c78423";
+                string ROLE_ID = "e52c169c-cd4a-473a-becc-0dba41c78423"; 
+                string ROLE_IDAlumno = "e52c169c-cd4a-473a-becc-0dba41c78424";
                 modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole
                 {
                     Name = "SuperAdmin",
                     NormalizedName = "SUPERADMIN",
                     Id = ROLE_ID
+                }); 
+                modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole
+                {
+                    Name = "Alumno",
+                    NormalizedName = "ALUMNO",
+                    Id = ROLE_IDAlumno
                 });
                 var appUser = new ApplicationUser
                 {

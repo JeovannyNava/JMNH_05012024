@@ -1,5 +1,6 @@
 ﻿using JMNH_05012024.Models;
 using JMNH_05012024.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +28,7 @@ namespace JMNH_05012024.Controllers
         }
 
         [Route("Alumno/{IdAlumno?}")]
+        [Authorize(Roles = "SuperAdmin")]
         public IActionResult Alumno(int? IdAlumno)
         {
             var model = db.Alumnos.Find(IdAlumno) ?? new Alumno();
@@ -35,7 +37,7 @@ namespace JMNH_05012024.Controllers
             return View(model);
         }
         [Route("Alumnos")]
-   
+        [Authorize(Roles= "SuperAdmin")]
         public IActionResult Alumnos()
         {
 
@@ -89,6 +91,7 @@ namespace JMNH_05012024.Controllers
             using var dbContextTransaction = db.Database.BeginTransaction();
             try
             {
+                alumno.UserName = alumno.Nombre + alumno.ApellidoPaterno;
                 var aux = alumno.IdAlumno == 0 ? db.Alumnos.Add(alumno) : db.Update(alumno);
 
                 var user = alumno.IdAlumno == 0 ? new ApplicationUser
@@ -104,6 +107,7 @@ namespace JMNH_05012024.Controllers
                 if (alumno.IdAlumno == 0)
                 {
                     var result = await _userManager.CreateAsync(user, "Abcd-1234");
+                     await _userManager.AddToRoleAsync(user, "Alumno");
                     if (!result.Succeeded)
                     {
                         dbContextTransaction.Rollback();
