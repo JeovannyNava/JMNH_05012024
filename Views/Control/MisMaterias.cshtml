@@ -50,6 +50,11 @@
 </div>
 @section Scripts{
 <script>
+
+    let cerrarModal = () => {
+        $("#mdl-materias").modal("hide")
+    }
+
     let agregarMateria = () => {
         $('#div-modalAgregarMaterias').load("/Control/_AgregarMateria", function () {
             $("#mdl-materias").modal("show");
@@ -95,6 +100,48 @@
             }
         });
 
+    }
+    let inscribirMateria = () => {
+        if (!$("#form-materia").valid()) {
+            return false;
+        }
+        swal({
+            title: "¿Estás seguro de inscribir esta materia?",
+            text: "",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        }).then((confirmar) => {
+            if (confirmar) {
+                $.ajax({
+                    url: "/Control/InscribirMateria",
+                    data: { IdMateria: $("#IdMateria").val() },
+                    success: function (msg) {
+
+                        if (msg.status == 200) {
+                            swal({
+                                title: "ÉXITO",
+                                text: "Proceso terminado con éxito",
+                                icon: "success",
+                                button: "Aceptar",
+                            }).then((value) => {
+                                window.location.reload();
+                            });
+                        } else {
+                            swal({
+                                title: "Error",
+                                text: "Ocurrio un error, intentelo nuevamente",
+                                icon: "warning",
+                                button: "Aceptar",
+                            });
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            }
+        });
     }
 </script>
 }

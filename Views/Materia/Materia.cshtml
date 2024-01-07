@@ -45,40 +45,50 @@
             if (!$("#form-materia").valid()) {
                 return false;
             }
-            var form = $("#form-materia")[0];
-            var formData = new FormData(form);
-            $.ajax({
-                type: "POST",
-                url: "/Materia/SaveOrUpdateMateria",
-                data: formData,
-                processData: false,  // tell jQuery not to process the data
-                contentType: false,   // tell jQuery not to set contentType
-                success: function (msg) {
-                    if (msg.status == 200) {
-                        console.log("Removidos",msg.removidos)
+            swal({
+                title: "¿Estás seguro de realizar esta acción?",
+                text: "",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((confirmar) => {
+                if (confirmar) {
+                    var form = $("#form-materia")[0];
+                    var formData = new FormData(form);
+                    $.ajax({
+                        type: "POST",
+                        url: "/Materia/SaveOrUpdateMateria",
+                        data: formData,
+                        processData: false,  // tell jQuery not to process the data
+                        contentType: false,   // tell jQuery not to set contentType
+                        success: function (msg) {
+                            if (msg.status == 200) {
+                                console.log("Removidos", msg.removidos)
 
-                        let message = msg.removidos.length > 0 ? "Proceso terminado con éxito, se removieron caracteres en el nombre la materia" : "Proceso terminado con éxito";
-                            swal({
-                                title: "ÉXITO",
-                                text: message,
-                                icon: "success",
-                                button: "Aceptar",
-                            }).then((value) => {
-                                window.location.href = '/Materias'
-                            });
-                      
-                
-                    } else {
-                        swal({
-                            title: "Error",
-                            text: "Ocurrio un error, intentelo nuevamente",
-                            icon: "warning",
-                            button: "Aceptar",
-                        });
-                    }
-                },
-                error: function (err) {
-                    console.log(err);
+                                let message = msg.removidos.length > 0 ? "Proceso terminado con éxito, se removieron caracteres en el nombre la materia" : "Proceso terminado con éxito";
+                                swal({
+                                    title: "ÉXITO",
+                                    text: message,
+                                    icon: "success",
+                                    button: "Aceptar",
+                                }).then((value) => {
+                                    window.location.href = '/Materias'
+                                });
+
+
+                            } else {
+                                swal({
+                                    title: "Error",
+                                    text: "Ocurrio un error, intentelo nuevamente",
+                                    icon: "warning",
+                                    button: "Aceptar",
+                                });
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+                    });
                 }
             });
         }

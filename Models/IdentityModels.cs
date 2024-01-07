@@ -15,6 +15,7 @@ namespace JMNH_05012024.Models
             public string ApellidoPaterno { get; set; }
             public string ApellidoMaterno { get; set; }
             public DateTime FechaAlta { get; set; }
+            public bool Eliminado { get; set; }
          
 
 

@@ -42,8 +42,7 @@ namespace JMNH_05012024.Models
                     ApellidoMaterno = "Hernandez",
                     UserName = "Master",
                     NormalizedUserName = "JEOVANNY156@GMAIL.COM",
-                    Id = ADMIN_ID,
-                    LockoutEnabled = false
+                    Id = ADMIN_ID
                   
                 };
                 modelBuilder.Entity<IdentityUserRole<string>>().HasData(new IdentityUserRole<string>

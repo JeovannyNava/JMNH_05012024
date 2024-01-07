@@ -52,44 +52,63 @@
             if (!$("#form-alumno").valid()) {
                 return false;
             }
-            var form = $("#form-alumno")[0];
-            var formData = new FormData(form);
-            $.ajax({
-                type: "POST",
-                url: "/Alumno/SaveOrUpdateAlumno",
-                data: formData,
-                processData: false,  // tell jQuery not to process the data
-                contentType: false,   // tell jQuery not to set contentType
-                success: function (msg) {
-                    if (msg.status == 200) {
-                        if (msg.status == 200) {
-                            swal({
-                                title: "ÉXITO",
-                                text: "Proceso terminado con éxito",
-                                icon: "success",
-                                button: "Aceptar",
-                            }).then((value) => {
-                                window.location.href = '/Alumnos'
-                            });
-                        } else {
-                            swal({
-                                title: "Error",
-                                text: "Ocurrio un error, intentelo nuevamente",
-                                icon: "warning",
-                                button: "Aceptar",
-                            });
+            swal({
+                title: "¿Estás seguro de realizar esta acción?",
+                text: "",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((confirmar) => {
+                if (confirmar) {
+                    var form = $("#form-alumno")[0];
+                    var formData = new FormData(form);
+                    $.ajax({
+                        type: "POST",
+                        url: "/Alumno/SaveOrUpdateAlumno",
+                        data: formData,
+                        processData: false,  // tell jQuery not to process the data
+                        contentType: false,   // tell jQuery not to set contentType
+                        success: function (msg) {
+                            console.log(msg)
+                            if (msg.status == 200 || msg.status == 201) {
+                                if (msg.status == 200) {
+                                    swal({
+                                        title: "ÉXITO",
+                                        text: "Proceso terminado con éxito",
+                                        icon: "success",
+                                        button: "Aceptar",
+                                    }).then((value) => {
+                                        window.location.href = '/Alumnos'
+                                    });
+                                }
+                                else if (msg.status == 201) {
+                                    swal({
+                                        title: "ALUMNO EXISTENTE",
+                                        text: msg.message,
+                                        icon: "warging",
+                                        button: "Aceptar",
+                                    })
+                                } else {
+                                    swal({
+                                        title: "Error",
+                                        text: "Ocurrio un error, intentelo nuevamente",
+                                        icon: "warning",
+                                        button: "Aceptar",
+                                    });
+                                }
+                            } else {
+                                swal({
+                                    title: "Error",
+                                    text: "Ocurrio un error, intentelo nuevamente",
+                                    icon: "warning",
+                                    button: "Aceptar",
+                                });
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err);
                         }
-                    } else {
-                        swal({
-                            title: "Error",
-                            text: "Ocurrio un error, intentelo nuevamente",
-                            icon: "warning",
-                            button: "Aceptar",
-                        });
-                    }
-                },
-                error: function (err) {
-                    console.log(err);
+                    });
                 }
             });
         }
@@ -152,7 +171,7 @@
                         url: "/Alumno/EliminarAlumno",
                         data: { IdAlumno: IdAlumno },
                         success: function (msg) {
-
+                            console.log(msg)
                             if (msg.status == 200) {
                                 swal({
                                     title: "ÉXITO",
@@ -162,11 +181,12 @@
                                 }).then((value) => {
                                     window.location.reload();
                                 });
-                            } else {
+                            } 
+                            else {
                                 swal({
                                     title: "Error",
                                     text: "Ocurrio un error, intentelo nuevamente",
-                                    icon: "warning",
+                                    icon: "danger",
                                     button: "Aceptar",
                                 });
                             }

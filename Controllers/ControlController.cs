@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -88,6 +89,17 @@ namespace JMNH_05012024.Controllers
             }
             dbContextTransaction.Commit();
             return Json(new { status = 200, message = "Ok" });
+        }
+        [Route("materias-alumno/{IdAlumno}")]
+        [Authorize(Roles = "SuperAdmin")]
+        public IActionResult MateriasAlumno(int IdAlumno)
+        {
+
+            var alumno = db.Alumnos.FirstOrDefault(x => x.IdAlumno == IdAlumno);
+            alumno.Materias = db.MateriasAlumnos.Where(x => x.IdAlumno == alumno.IdAlumno && !x.Materia.Eliminado).Select(x => x.Materia).ToList();
+            return View(alumno);
+
+     
         }
     }
 }

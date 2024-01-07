@@ -57,11 +57,8 @@ namespace JMNH_05012024.Controllers
         
         public async Task<ActionResult> LoginAlumno(LoginViewModelAlumno model)
         {
-
-           
-            var user = _userManager.Users.Where(x => x.UserName == model.Nombre + model.Apellido && !x.LockoutEnabled).FirstOrDefault();
-
-            if (user != null)
+            var user = (ApplicationUser)_userManager.Users.Where(x => x.UserName == model.Nombre.Replace(" ", string.Empty) + model.Apellido.Replace(" ", string.Empty)).FirstOrDefault();
+            if (user != null && !user.Eliminado)
             {
                 await _signInManager.SignInAsync(user, true, "");
                 return RedirectToAction("Index", "Home");

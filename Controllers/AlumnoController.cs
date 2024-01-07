@@ -89,19 +89,24 @@ namespace JMNH_05012024.Controllers
             using var dbContextTransaction = db.Database.BeginTransaction();
             try
             {
-                alumno.UserName = alumno.Nombre + alumno.ApellidoPaterno;
+                var userName = alumno.Nombre.Replace(" ", string.Empty) + alumno.ApellidoPaterno.Replace(" ", string.Empty);
+                var existeAlumno = db.Users.FirstOrDefault(x => x.UserName == alumno.Nombre.Replace(" ", string.Empty) + alumno.ApellidoPaterno.Replace(" ", string.Empty))!=null;
+                if (existeAlumno && alumno.IdAlumno==0)
+                {
+                    return Json(new { status = 201, message = "Ya existe un alumno con este nombre y apellido" });
+                }
+                alumno.UserName = userName;
                 var aux = alumno.IdAlumno == 0 ? db.Alumnos.Add(alumno) : db.Update(alumno);
 
                 var user = alumno.IdAlumno == 0 ? new ApplicationUser
                 {
-                    UserName = alumno.Nombre + alumno.ApellidoPaterno,
+                    UserName = alumno.Nombre.Replace(" ", string.Empty) + alumno.ApellidoPaterno.Replace(" ", string.Empty),
                     Nombre = alumno.Nombre,
                     ApellidoPaterno = alumno.ApellidoPaterno,
                     ApellidoMaterno = alumno.ApellidoMaterno,
                     Email = "generico@gmail.com",
-                    FechaAlta = DateTime.Now,
-                    LockoutEnabled = false
-                } : db.Users.FirstOrDefault(x => x.UserName == alumno.Nombre + alumno.ApellidoPaterno);
+                    FechaAlta = DateTime.Now
+                } : db.Users.FirstOrDefault(x => x.UserName == alumno.Nombre.Replace(" ", string.Empty) + alumno.ApellidoPaterno.Replace(" ", string.Empty));
 
                 if (alumno.IdAlumno == 0)
                 {
@@ -120,7 +125,7 @@ namespace JMNH_05012024.Controllers
                     user.Nombre = alumno.Nombre;
                     user.ApellidoPaterno = alumno.ApellidoPaterno;
                     user.ApellidoMaterno = alumno.ApellidoMaterno;
-                    user.UserName = alumno.Nombre + alumno.ApellidoPaterno;
+                    user.UserName = alumno.Nombre.Replace(" ", string.Empty) + alumno.ApellidoPaterno.Replace(" ", string.Empty);
                     db.Update(user);
                    
                 }
@@ -141,8 +146,8 @@ namespace JMNH_05012024.Controllers
             {
                 var alumno = db.Alumnos.Find(IdAlumno);
                 alumno.Eliminado = true;
-                var user = _userManager.Users.Where(x => x.UserName == alumno.Nombre + alumno.ApellidoPaterno).FirstOrDefault();
-                user.LockoutEnabled = true;
+                var user = (ApplicationUser)_userManager.Users.Where(x => x.UserName == alumno.Nombre.Replace(" ", string.Empty) + alumno.ApellidoPaterno.Replace(" ", string.Empty)).FirstOrDefault();
+                user.Eliminado = true;
                 db.SaveChanges();
             }
             catch (Exception ex)
