@@ -30,7 +30,12 @@
     </div>
 </div>
 <div>
+    @if (Model.IdAlumno != 0)
+    {
+        <button style="float:right;margin-left:3%" class="btn btn-danger" onclick="eliminarAlumno(@Model.IdAlumno)"><i class='fa fa-trash'></i> Eliminar</button>
+    }
     <button style="float:right;margin-left:3%" class="btn btn-success" onclick="saveOrUpdateAlumno()">Guardar</button>
+
 </div>
 
 @section Scripts{
@@ -134,6 +139,45 @@
                 }
             });
         }
-      
+        let eliminarAlumno = (IdAlumno) => {
+            swal({
+                title: "Estás seguro de eliminar este alumno",
+                text: "",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((confirmar) => {
+                if (confirmar) {
+                    $.ajax({
+                        url: "/Alumno/EliminarAlumno",
+                        data: { IdAlumno: IdAlumno },
+                        success: function (msg) {
+
+                            if (msg.status == 200) {
+                                swal({
+                                    title: "ÉXITO",
+                                    text: "Alumno eliminado con éxito",
+                                    icon: "success",
+                                    button: "Aceptar",
+                                }).then((value) => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                swal({
+                                    title: "Error",
+                                    text: "Ocurrio un error, intentelo nuevamente",
+                                    icon: "warning",
+                                    button: "Aceptar",
+                                });
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+                    });
+                }
+            });
+
+        }
     </script>
 }

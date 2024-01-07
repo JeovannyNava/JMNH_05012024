@@ -13,14 +13,12 @@ namespace JMNH_05012024.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly ILogger<AccountController> _logger;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ApplicationDbContext db;
-        public AccountController(ILogger<AccountController> logger, UserManager<IdentityUser> userManager,
+        public AccountController(UserManager<IdentityUser> userManager,
                               SignInManager<IdentityUser> signInManager, ApplicationDbContext context)
         {
-            _logger = logger;
             _userManager = userManager;
             _signInManager = signInManager;
             db = context;
@@ -61,7 +59,7 @@ namespace JMNH_05012024.Controllers
         {
 
            
-            var user = _userManager.Users.Where(x => x.UserName == model.Nombre + model.Apellido).FirstOrDefault();
+            var user = _userManager.Users.Where(x => x.UserName == model.Nombre + model.Apellido && !x.LockoutEnabled).FirstOrDefault();
 
             if (user != null)
             {

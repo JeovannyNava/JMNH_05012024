@@ -4,14 +4,16 @@ using JMNH_05012024.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace JMNH_05012024.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240107165908_camposEliminado")]
+    partial class camposEliminado
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -138,14 +140,14 @@ namespace JMNH_05012024.Migrations
                         new
                         {
                             Id = "e52c169c-cd4a-473a-becc-0dba41c78423",
-                            ConcurrencyStamp = "eb8a1591-0a91-437d-abf0-c5baba748168",
+                            ConcurrencyStamp = "9fcb9296-1114-48f6-b5cb-260d14f87c2e",
                             Name = "SuperAdmin",
                             NormalizedName = "SUPERADMIN"
                         },
                         new
                         {
                             Id = "e52c169c-cd4a-473a-becc-0dba41c78424",
-                            ConcurrencyStamp = "c62dac76-5329-4fae-8e11-a1816ce1fc8f",
+                            ConcurrencyStamp = "09274397-dd35-4359-b797-8ebb9262d22d",
                             Name = "Alumno",
                             NormalizedName = "ALUMNO"
                         });
@@ -359,14 +361,14 @@ namespace JMNH_05012024.Migrations
                         {
                             Id = "72c7e21c-ac55-46b4-a2ee-df24af6b45e4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7fe228c8-1b7e-4525-b931-2b71fd2381e3",
+                            ConcurrencyStamp = "a7cc0b3c-5f1d-418b-8227-43112b59f106",
                             Email = "jeovanny156@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedUserName = "JEOVANNY156@GMAIL.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEGJNCQpPv7jBiDODZefCY1JiQmY8dNKoml/bj7Fy4r7Jd+uZAMqirMJJUyYWCoi+rQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEHwyUC0qWv43UJcESApHUQlcbE9ACaglLuJdzSoWCsM/cajB8ibfDB5JVKm0kPbMhw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "dbd798e4-f63d-49e0-af69-dedc3bc4e7a8",
+                            SecurityStamp = "58552188-3cf1-43dc-9ae2-d085e1c5561a",
                             TwoFactorEnabled = false,
                             UserName = "Master",
                             ApellidoMaterno = "Hernandez",

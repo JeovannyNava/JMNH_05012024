@@ -1,7 +1,7 @@
 ﻿<div class="row mt-5">
 
     <div class="col-md-6 col-lg-6 col-sm-6">
-        <input type="text" id="busqueda" class="form-control" placeholder="Alumno..."/>
+        <input type="text" id="busqueda" class="form-control" placeholder="Alumno..." />
     </div>
     <div class="col-md-6 col-lg-6 col-sm-6">
         <a class="btn btn-success float-right" href="/alumno">
@@ -15,58 +15,100 @@
 </div>
 @section Scripts{
     <script>
-    $(()=> {
-        loadTablaAlumnos();
-    });
-    $('#busqueda').keyup(function () {
-        tablaAlumnos.search($(this).val()).draw();
-    });
+        $(() => {
+            loadTablaAlumnos();
+        });
+        $('#busqueda').keyup(function () {
+            tablaAlumnos.search($(this).val()).draw();
+        });
         var tablaAlumnos = null;
-    ColumnasAlumnos = [
-        { title: "NOMBRE", "data": "Nombre" },
-        { title: "APELLIDO PATERNO", "data": "ApellidoPaterno" },
-        { title: "APELLIDO MATERNO", "data": "ApellidoMaterno" },
-        { title: "",
-            "data": (data, type, row) => {
-                return `
-                    <a data-toggle='tooltip' data-placement='top' title='Editar' class='btn btn-outline-info btn-fw' type='button' href='Alumno/${data.IdAlumno}'><i class='fa fa-edit'></i></a>
-                    <a data-toggle='tooltip' data-placement='top' title='Ver Materias' class='btn btn-outline-info btn-fw' type='button' href='materias-alumno/${data.IdAlumno}'><i class='fa fa-book'></i></a>
-                    `;
+        ColumnasAlumnos = [
+            { title: "NOMBRE", "data": "Nombre" },
+            { title: "APELLIDO PATERNO", "data": "ApellidoPaterno" },
+            { title: "APELLIDO MATERNO", "data": "ApellidoMaterno" },
+            {
+                title: "",
+                "data": (data, type, row) => {
+                    return `
+                        <a data-toggle='tooltip' data-placement='top' title='Editar' class='btn btn-outline-info btn-fw' type='button' href='Alumno/${data.IdAlumno}'><i class='fa fa-edit'></i></a>
+                        <a data-toggle='tooltip' data-placement='top' title='Ver Materias' class='btn btn-outline-info btn-fw' type='button' href='materias-alumno/${data.IdAlumno}'><i class='fa fa-book'></i></a>
+                        <button data-toggle='tooltip' data-placement='top' title='Eliminar' class='btn btn-outline-info btn-fw' onclick=eliminarAlumno(${data.IdAlumno})><i class='fa fa-trash' style='color:red'></i></button>
+                        `;
+                }
+            }
+        ];
+        let loadTablaAlumnos = () => {
+            if (tablaAlumnos == null) {
+                tablaAlumnos = $('#tabla-alumnos').DataTable({
+                    responsive: false,
+                    lengthChange: false,
+                    searching: false,
+                    ordering: false,
+                    language: {
+                        "paginate": {
+                            "previous": "Anterior",
+                            "next": "Siguiente"
+                        },
+                        "info": "",
+                        "zeroRecords": "No hay registros que mostrar",
+                    },
+                    serverSide: true,
+                    ajax: {
+                        "url": '/Alumno/Alumnos',
+                        "type": "POST",
+                        "data": function (d) {
+                            d.Buscador = $("#busqueda").val();
+                        }
+                    },
+                    initComplete: function (settings, json) {
+                        $(".btnTooltip").attr("data-toggle", "tooltip");
+                        $(".btnTooltip").attr("data-placement", "top");
+                        $('[data-toggle="tooltip"]').tooltip();
+                    },
+                    columns: ColumnasAlumnos,
+                    "info": false
+                });
             }
         }
-    ];
-    let loadTablaAlumnos = ()=> {
-        if (tablaAlumnos == null) {
-            tablaAlumnos = $('#tabla-alumnos').DataTable({
-                responsive: false,
-                lengthChange: false,
-                searching: false,
-                ordering: false,
-                language: {
-                    "paginate": {
-                        "previous": "Anterior",
-                        "next": "Siguiente"
-                    },
-                    "info": "",
-                    "zeroRecords": "No hay registros que mostrar",
-                },
-                serverSide: true,
-                ajax: {
-                    "url": '/Alumno/Alumnos',
-                    "type": "POST",
-                    "data": function (d) {
-                        d.Buscador = $("#busqueda").val();
-                    }
-                },
-                initComplete: function (settings, json) {
-                    $(".btnTooltip").attr("data-toggle", "tooltip");
-                    $(".btnTooltip").attr("data-placement", "top");
-                    $('[data-toggle="tooltip"]').tooltip();
-                },
-                columns: ColumnasAlumnos,
-                "info": false
+        let eliminarAlumno = (IdAlumno) => {
+            swal({
+                title: "Estás seguro de eliminar este alumno",
+                text: "",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((confirmar) => {
+                if (confirmar) {
+                    $.ajax({
+                        url: "/Alumno/EliminarAlumno",
+                        data: { IdAlumno: IdAlumno },
+                        success: function (msg) {
+
+                            if (msg.status == 200) {
+                                swal({
+                                    title: "ÉXITO",
+                                    text: "Alumno eliminado con éxito",
+                                    icon: "success",
+                                    button: "Aceptar",
+                                }).then((value) => {
+                                    loadTablaAlumnos.ajax.reload();
+                                });
+                            } else {
+                                swal({
+                                    title: "Error",
+                                    text: "Ocurrio un error, intentelo nuevamente",
+                                    icon: "warning",
+                                    button: "Aceptar",
+                                });
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+                    });
+                }
             });
+
         }
-    }
     </script>
 }

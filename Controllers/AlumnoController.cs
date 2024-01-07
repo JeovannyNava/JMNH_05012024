@@ -17,12 +17,10 @@ namespace JMNH_05012024.Controllers
     {
         private readonly ApplicationDbContext db;
         private UserManager<IdentityUser> _userManager;
-        private readonly IWebHostEnvironment _env;
         public IConfiguration Configuration { get; set; }
-        public AlumnoController(ApplicationDbContext context, IWebHostEnvironment env, UserManager<IdentityUser> userManager, IConfiguration configuration)
+        public AlumnoController(ApplicationDbContext context, UserManager<IdentityUser> userManager, IConfiguration configuration)
         {
-            db = context;
-            _env = env;
+            db = context;         
             _userManager = userManager;
             Configuration = configuration;
         }
@@ -56,7 +54,7 @@ namespace JMNH_05012024.Controllers
 
                 var PageNumber = (start / length);
                 PageNumber += 1;
-                var query = db.Alumnos.Where(x =>
+                var query = db.Alumnos.Where(x => !x.Eliminado &&
                 (string.IsNullOrEmpty(buscador) || x.Nombre.ToLower().Contains(buscador.ToLower()) ||
                  string.IsNullOrEmpty(buscador) || x.ApellidoPaterno.ToLower().Contains(buscador.ToLower()) ||
                  string.IsNullOrEmpty(buscador) || x.ApellidoPaterno.ToLower().Contains(buscador.ToLower()))
@@ -101,7 +99,8 @@ namespace JMNH_05012024.Controllers
                     ApellidoPaterno = alumno.ApellidoPaterno,
                     ApellidoMaterno = alumno.ApellidoMaterno,
                     Email = "generico@gmail.com",
-                    FechaAlta = DateTime.Now
+                    FechaAlta = DateTime.Now,
+                    LockoutEnabled = false
                 } : db.Users.FirstOrDefault(x => x.UserName == alumno.Nombre + alumno.ApellidoPaterno);
 
                 if (alumno.IdAlumno == 0)
@@ -125,6 +124,25 @@ namespace JMNH_05012024.Controllers
                     db.Update(user);
                    
                 }
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                dbContextTransaction.Rollback();
+                return Json(new { status = 500, message = "Error", error = ex.ToString() });
+            }
+            dbContextTransaction.Commit();
+            return Json(new { status = 200, message = "Ok" });
+        }
+        public JsonResult EliminarAlumno(int IdAlumno)
+        {
+            using var dbContextTransaction = db.Database.BeginTransaction();
+            try
+            {
+                var alumno = db.Alumnos.Find(IdAlumno);
+                alumno.Eliminado = true;
+                var user = _userManager.Users.Where(x => x.UserName == alumno.Nombre + alumno.ApellidoPaterno).FirstOrDefault();
+                user.LockoutEnabled = true;
                 db.SaveChanges();
             }
             catch (Exception ex)

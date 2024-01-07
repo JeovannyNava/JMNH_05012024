@@ -17,12 +17,10 @@ namespace JMNH_05012024.Controllers
     {
         private readonly ApplicationDbContext db;
         private UserManager<IdentityUser> _userManager;
-        private readonly IWebHostEnvironment _env;
         public IConfiguration _configuration { get; set; }
-        public MateriaController(ApplicationDbContext context, IWebHostEnvironment env, UserManager<IdentityUser> userManager, IConfiguration configuration)
+        public MateriaController(ApplicationDbContext context, UserManager<IdentityUser> userManager, IConfiguration configuration)
         {
             db = context;
-            _env = env;
             _userManager = userManager;
             _configuration = configuration;
         }
@@ -56,7 +54,7 @@ namespace JMNH_05012024.Controllers
 
                 var PageNumber = (start / length);
                 PageNumber += 1;
-                var query = db.Materias.Where(x =>
+                var query = db.Materias.Where(x => !x.Eliminado &&
                 (string.IsNullOrEmpty(buscador) || x.Nombre.ToLower().Contains(buscador.ToLower()))).ToList();
                 var materias = query.Skip(start).Take(length).ToList();
                 var data = materias.Select(materia => new Dictionary<string, string>()
@@ -80,17 +78,6 @@ namespace JMNH_05012024.Controllers
                 response.error = ex.ToString();
                 return Json(response);
             }
-        }
-        [Route("mis-materias")]
-        [Authorize(Roles="Alumno")]
-        public async Task<IActionResult> MisMateriasAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            var userName = user.UserName;
-            var alumno = db.Alumnos.FirstOrDefault(x=> x.UserName == userName);
-            alumno.Materias = db.MateriasAlumnos.Where(x=> x.IdAlumno == alumno.IdAlumno).Select(x=> x.Materia).ToList();
-            
-            return View(alumno);
         }
         [HttpPost]
         public JsonResult SaveOrUpdateMateria(Materia materia)
@@ -122,29 +109,14 @@ namespace JMNH_05012024.Controllers
             }
             dbContextTransaction.Commit();
             return Json(new { status = 200, message = "Ok", removidos = listRemovidos });
-        }
-        public async Task<PartialViewResult> _AgregarMateriaAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            var userName = user.UserName;
-            var alumno = db.Alumnos.FirstOrDefault(x => x.UserName == userName);
-            var materiasAlumno =  db.MateriasAlumnos.Where(x => x.IdAlumno == alumno.IdAlumno).Select(x => x.Materia).ToList().Select(x=> x.IdMateria);
-            ViewBag.Materias = db.Materias.Where(x => !materiasAlumno.Contains(x.IdMateria)).Select(x => new SelectListItem { Value = x.IdMateria.ToString(), Text = x.Nombre + " $" + x.Costo }).ToList(); ;
-            return PartialView();
-        }
-        public async Task<JsonResult> InscribirMateria(int IdMateria)
+        } 
+        public JsonResult EliminarMateria(int IdMateria)
         {
             using var dbContextTransaction = db.Database.BeginTransaction();
             try
             {
-                var user = await _userManager.GetUserAsync(User);
-                var userName = user.UserName;
-                var alumno = db.Alumnos.FirstOrDefault(x => x.UserName == userName);
                 var materia = db.Materias.Find(IdMateria);
-                db.MateriasAlumnos.Add(new MateriasAlumno { 
-                IdAlumno = alumno.IdAlumno,
-                IdMateria = materia.IdMateria
-                });
+                materia.Eliminado = true;
                 db.SaveChanges();
             }
             catch (Exception ex)
@@ -155,5 +127,6 @@ namespace JMNH_05012024.Controllers
             dbContextTransaction.Commit();
             return Json(new { status = 200, message = "Ok" });
         }
+
     }
 }

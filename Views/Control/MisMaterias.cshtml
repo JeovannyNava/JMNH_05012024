@@ -1,0 +1,100 @@
+﻿@model JMNH_05012024.Models.Alumno
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="text-center mb-5">Mis Materias</h1>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <table id="materias" class="table table-bordered">
+        <thead>
+            <tr>
+                <th>
+                    Nombre
+                </th>
+                <th>
+                    Costo
+                </th>
+            </tr>
+
+        </thead>
+        <tbody>
+            @foreach(var materia in Model.Materias)
+            {
+            <tr>
+                <td>@materia.Nombre</td>
+                <td>$@(String.Format("{0:#,##0.00}", materia.Costo))</td>
+                <td>  <button data-toggle='tooltip' data-placement='top' title='Eliminar' class='btn btn-outline-info btn-fw' onclick=bajaMateria(@materia.IdMateria)><i class='fa fa-trash' style='color:red'></i></button></td>
+            </tr>
+            }
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Total</td>
+                <td></td>
+                <td>$@(String.Format("{0:#,##0.00}",Model.Materias.Sum(x=> x.Costo)))</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div id="div-modalAgregarMaterias"></div>
+<div>
+    <button class="btn btn-success" onclick="agregarMateria()">Agregar Materia</button>
+</div>
+@section Scripts{
+<script>
+    let agregarMateria = () => {
+        $('#div-modalAgregarMaterias').load("/Control/_AgregarMateria", function () {
+            $("#mdl-materias").modal("show");
+        });
+    }
+    let bajaMateria = (IdMateria) => {
+        swal({
+            title: "Estás seguro de dar de baja esta materia",
+            text: "",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        }).then((confirmar) => {
+            if (confirmar) {
+
+                $.ajax({
+                    url: "/Control/BajaMateria",
+                    data: { IdMateria: IdMateria },
+                    success: function (msg) {
+
+                        if (msg.status == 200) {
+                            swal({
+                                title: "ÉXITO",
+                                text: "Alumno eliminado con éxito",
+                                icon: "success",
+                                button: "Aceptar",
+                            }).then((value) => {
+                                window.location.reload();
+                            });
+                        } else {
+                            swal({
+                                title: "Error",
+                                text: "Ocurrio un error, intentelo nuevamente",
+                                icon: "warning",
+                                button: "Aceptar",
+                            });
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            }
+        });
+
+    }
+</script>
+}

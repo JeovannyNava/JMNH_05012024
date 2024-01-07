@@ -1,7 +1,7 @@
 ﻿<div class="row mt-5">
 
     <div class="col-md-6 col-lg-6 col-sm-6">
-        <input type="text" id="busqueda" class="form-control" placeholder="Nombre de la materia"/>
+        <input type="text" id="busqueda" class="form-control" placeholder="Nombre de la materia" />
     </div>
     <div class="col-md-6 col-lg-6 col-sm-6">
         <a class="btn btn-success float-right" href="/materia">
@@ -15,55 +15,100 @@
 </div>
 @section Scripts{
     <script>
-    $(()=> {
-        loadTablaMaterias();
-    });
-    $('#busqueda').keyup(function () {
-        tablaMaterias.search($(this).val()).draw();
-    });
+        $(() => {
+            loadTablaMaterias();
+        });
+        $('#busqueda').keyup(function () {
+            tablaMaterias.search($(this).val()).draw();
+        });
         var tablaMaterias = null;
-    ColumnasMaterias = [
-        { title: "NOMBRE", "data": "Nombre" },
-        { title: "COSTO", "data": "Costo" },
-        
-        { title: "",
-            "data": (data, type, row) => {
-                return `<a data-toggle='tooltip' data-placement='top' title='Editar' class='btn btn-outline-info btn-fw' type='button' href='Materia/${data.IdMateria}'><i class='fa fa-edit'></i></a>`;
+        ColumnasMaterias = [
+            { title: "NOMBRE", "data": "Nombre" },
+            { title: "COSTO", "data": "Costo" },
+
+            {
+                title: "",
+                "data": (data, type, row) => {
+                    return `
+                        <a data-toggle='tooltip' data-placement='top' title='Editar' class='btn btn-outline-info btn-fw' type='button' href='Materia/${data.IdMateria}'><i class='fa fa-edit'></i></a>
+                        <button data-toggle='tooltip' data-placement='top' title='Eliminar' class='btn btn-outline-info btn-fw' onclick=eliminarMateria(${data.IdMateria})><i class='fa fa-trash' style='color:red'></i></button>
+                        `;
+                }
             }
-        }
-    ];
-        let loadTablaMaterias = ()=> {
+        ];
+        let loadTablaMaterias = () => {
             if (tablaMaterias == null) {
                 tablaMaterias = $('#tabla-materias').DataTable({
-                responsive: false,
-                lengthChange: false,
-                searching: false,
-                ordering: false,
-                language: {
-                    "paginate": {
-                        "previous": "Anterior",
-                        "next": "Siguiente"
+                    responsive: false,
+                    lengthChange: false,
+                    searching: false,
+                    ordering: false,
+                    language: {
+                        "paginate": {
+                            "previous": "Anterior",
+                            "next": "Siguiente"
+                        },
+                        "info": "",
+                        "zeroRecords": "No hay registros que mostrar",
                     },
-                    "info": "",
-                    "zeroRecords": "No hay registros que mostrar",
-                },
-                serverSide: true,
-                ajax: {
-                    "url": '/Materia/Materias',
-                    "type": "POST",
-                    "data": function (d) {
-                        d.Buscador = $("#busqueda").val();
-                    }
-                },
-                initComplete: function (settings, json) {
-                    $(".btnTooltip").attr("data-toggle", "tooltip");
-                    $(".btnTooltip").attr("data-placement", "top");
-                    $('[data-toggle="tooltip"]').tooltip();
-                },
+                    serverSide: true,
+                    ajax: {
+                        "url": '/Materia/Materias',
+                        "type": "POST",
+                        "data": function (d) {
+                            d.Buscador = $("#busqueda").val();
+                        }
+                    },
+                    initComplete: function (settings, json) {
+                        $(".btnTooltip").attr("data-toggle", "tooltip");
+                        $(".btnTooltip").attr("data-placement", "top");
+                        $('[data-toggle="tooltip"]').tooltip();
+                    },
                     columns: ColumnasMaterias,
-                "info": false
-            });
+                    "info": false
+                });
+            }
         }
-    }
+        let eliminarMateria = (IdMateria) => {
+            swal({
+                title: "Estás seguro de eliminar este alumno",
+                text: "",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((confirmar) => {
+                if (confirmar) {
+
+                    $.ajax({
+                        url: "/Materia/EliminarMateria",
+                        data: { IdMateria: IdMateria },
+                        success: function (msg) {
+
+                            if (msg.status == 200) {
+                                swal({
+                                    title: "ÉXITO",
+                                    text: "Materia eliminada con éxito",
+                                    icon: "success",
+                                    button: "Aceptar",
+                                }).then((value) => {
+                                    loadTablaAlumnos.ajax.reload();
+                                });
+                            } else {
+                                swal({
+                                    title: "Error",
+                                    text: "Ocurrio un error, intentelo nuevamente",
+                                    icon: "warning",
+                                    button: "Aceptar",
+                                });
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+                    });
+                }
+            });
+
+        }
     </script>
 }
